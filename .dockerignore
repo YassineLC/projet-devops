@@ -1,0 +1,7 @@
+.git
+**/build
+**/.gradle
+**/node_modules
+**/dist
+k8s
+docs

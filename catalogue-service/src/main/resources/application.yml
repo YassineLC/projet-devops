@@ -15,8 +15,8 @@ spring:
 
   http:
     clients:
-      connect-timeout: 5s
-      read-timeout: 10s
+      connect-timeout: 10s
+      read-timeout: 20s
 
 server:
   port: 8080
