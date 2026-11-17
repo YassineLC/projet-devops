@@ -1,0 +1,72 @@
+# Point d'entrée unique : Istio Ingress Gateway → front et API
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: bibliotheque-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: bibliotheque
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - bibliotheque-gateway
+  http:
+    - name: catalogue
+      match:
+        - uri:
+            prefix: /api/livres
+      route:
+        - destination:
+            host: catalogue-service
+            port:
+              number: 8080
+      timeout: 30s
+      retries:
+        attempts: 3
+        perTryTimeout: 10s
+        retryOn: connect-failure,refused-stream,unavailable,503
+    - name: emprunts
+      match:
+        - uri:
+            prefix: /api/emprunts
+      route:
+        - destination:
+            host: emprunts-service
+            port:
+              number: 8080
+      timeout: 15s
+    - name: front
+      route:
+        - destination:
+            host: front-service
+            port:
+              number: 8080
+---
+# Sortie vers Open Library déclarée explicitement dans le mesh
+apiVersion: networking.istio.io/v1
+kind: ServiceEntry
+metadata:
+  name: openlibrary
+spec:
+  hosts:
+    - openlibrary.org
+    - covers.openlibrary.org
+  location: MESH_EXTERNAL
+  resolution: DNS
+  ports:
+    - number: 443
+      name: tls
+      protocol: TLS

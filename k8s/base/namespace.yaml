@@ -4,3 +4,4 @@ metadata:
   name: bibliotheque
   labels:
     name: bibliotheque
+    istio-injection: enabled

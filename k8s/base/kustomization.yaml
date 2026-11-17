@@ -11,6 +11,7 @@ resources:
   - catalogue-deployment.yaml
   - emprunts-deployment.yaml
   - front-deployment.yaml
+  - istio-gateway.yaml
 
 labels:
   - pairs:
