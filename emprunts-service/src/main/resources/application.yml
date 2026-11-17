@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: emprunts-service
+  datasource:
+    url: jdbc:h2:mem:emprunts
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+  grpc:
+    client:
+      channel:
+        catalogue:
+          target: ${CATALOGUE_GRPC_TARGET:static://localhost:9090}
+
+server:
+  port: 8080
+
+emprunts:
+  duree-jours: 14
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info
