@@ -1,0 +1,19 @@
+# Exécuté au premier démarrage de Postgres : une base et un utilisateur par service
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+  labels:
+    app: postgres
+data:
+  01-bases.sh: |
+    #!/bin/sh
+    set -e
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname postgres <<EOSQL
+      CREATE USER catalogue WITH PASSWORD '$CATALOGUE_DB_PASSWORD';
+      CREATE DATABASE catalogue OWNER catalogue;
+      REVOKE ALL ON DATABASE catalogue FROM PUBLIC;
+      CREATE USER emprunts WITH PASSWORD '$EMPRUNTS_DB_PASSWORD';
+      CREATE DATABASE emprunts OWNER emprunts;
+      REVOKE ALL ON DATABASE emprunts FROM PUBLIC;
+    EOSQL
