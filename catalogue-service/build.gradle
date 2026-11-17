@@ -36,6 +36,14 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+sourceSets {
+	main {
+		proto {
+			srcDir '../proto'
+		}
+	}
+}
+
 protobuf {
 	plugins {
 		grpc {

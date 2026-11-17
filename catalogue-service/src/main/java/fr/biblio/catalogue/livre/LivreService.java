@@ -26,4 +26,19 @@ public class LivreService {
     public Livre trouver(Long id) {
         return repository.findById(id).orElseThrow(() -> new LivreIntrouvableException(id));
     }
+
+    @Transactional
+    public Livre reserver(Long id) {
+        if (repository.reserver(id) == 0) {
+            trouver(id);
+            throw new StockEpuiseException(id);
+        }
+        return trouver(id);
+    }
+
+    @Transactional
+    public Livre liberer(Long id) {
+        repository.liberer(id);
+        return trouver(id);
+    }
 }

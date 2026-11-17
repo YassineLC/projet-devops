@@ -10,6 +10,8 @@ spring:
   grpc:
     server:
       port: 9090
+      servlet:
+        enabled: false
 
   http:
     clients:

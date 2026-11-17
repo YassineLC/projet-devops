@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package biblio;
+
+option java_multiple_files = true;
+option java_package = "fr.biblio.grpc";
+option java_outer_classname = "CatalogueProto";
+
+// Service interne appelé par emprunts-service
+service Catalogue {
+  rpc GetLivre(LivreId) returns (LivreInfo);
+  rpc ReserverExemplaire(LivreId) returns (LivreInfo);
+  rpc LibererExemplaire(LivreId) returns (LivreInfo);
+}
+
+message LivreId {
+  int64 id = 1;
+}
+
+message LivreInfo {
+  int64 id = 1;
+  string titre = 2;
+  int32 exemplaires_disponibles = 3;
+}
