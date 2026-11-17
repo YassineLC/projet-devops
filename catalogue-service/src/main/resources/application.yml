@@ -11,8 +11,20 @@ spring:
     server:
       port: 9090
 
+  http:
+    clients:
+      connect-timeout: 5s
+      read-timeout: 10s
+
 server:
   port: 8080
+
+openlibrary:
+  base-url: https://openlibrary.org
+  requetes-initiales: tolkien, asimov, victor hugo, dune, harry potter
+  limite: 12
+  exemplaires-par-defaut: 3
+  import-au-demarrage: true
 
 management:
   endpoint:
