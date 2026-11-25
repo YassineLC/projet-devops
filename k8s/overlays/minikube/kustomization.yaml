@@ -8,7 +8,8 @@ images:
   - name: yassinelahmar/biblio-catalogue
     newTag: sha-5e34e9f
   - name: yassinelahmar/biblio-emprunts
-    newTag: sha-5e34e9f
+    newTag: sha-c2f0615
+    digest: sha256:5c1222d80487a31a72e3aef2b93d0c03d8509dcdad0700e6974fcd324fe7cd63
   - name: yassinelahmar/biblio-front
     newTag: sha-c2f0615
     digest: sha256:8beaf7e85d535b2a643e064c09326503cab8a0d639f292cc00148745f137429a
