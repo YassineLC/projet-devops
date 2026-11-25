@@ -24,6 +24,11 @@ updates:
     groups:
       spring-minor-patch:
         update-types: [minor, patch]
+    ignore:
+      # Plugin protobuf 0.10.x incompatible avec l'intégration gRPC de Spring Boot
+      # (protoc introuvable) ; Spring Initializr reste en 0.9.6 avec Boot 4.2
+      - dependency-name: com.google.protobuf
+        versions: [">= 0.10.0"]
 
   - package-ecosystem: npm
     directory: /front

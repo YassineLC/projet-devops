@@ -19,6 +19,7 @@ permissions:
   contents: read
 
 env:
+  DOCKERHUB_NAMESPACE: yassinelahmar   # nom public du compte, pas un secret (absent des runs Dependabot)
   SERVICE: catalogue-service
   IMAGE: biblio-catalogue
   DOCKERFILE: catalogue-service/Dockerfile
@@ -132,7 +133,7 @@ jobs:
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: |
-            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE }}
+            docker.io/${{ env.DOCKERHUB_NAMESPACE }}/${{ env.IMAGE }}
             ${{ env.GHCR_IMAGE }}
           tags: |
             type=ref,event=pr
@@ -173,7 +174,7 @@ jobs:
           {
             echo "GHCR_NAME=ghcr.io/${GITHUB_REPOSITORY,,}/${IMAGE}"
             echo "GHCR_REF=ghcr.io/${GITHUB_REPOSITORY,,}/${IMAGE}@${DIGEST}"
-            echo "HUB_REF=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${IMAGE}@${DIGEST}"
+            echo "HUB_REF=docker.io/${DOCKERHUB_NAMESPACE}/${IMAGE}@${DIGEST}"
           } >> "$GITHUB_ENV"
 
       - name: Log in to Docker Hub
