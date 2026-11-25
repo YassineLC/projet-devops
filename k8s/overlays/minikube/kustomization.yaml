@@ -6,8 +6,8 @@ resources:
 # Versions déployées (mises à jour par la pipeline CI, déployées par ArgoCD)
 images:
   - name: yassinelahmar/biblio-catalogue
-    newTag: sha-4fb8721
-    digest: sha256:3cf15d202d8459da59da0b15c1f6438e451f7ec9a4a490e28f8406305a43cbd1
+    newTag: sha-6f96966
+    digest: sha256:0a616c68d082a2d698573fdca49b0c0b39692a2ea10a8b9e33a49a0beb158b68
   - name: yassinelahmar/biblio-emprunts
     newTag: sha-4fb8721
     digest: sha256:ebd6010a4889b0b4dfe1c5b7fe2c4ac899634cf737a781434e54aebe8f6b2ea5
