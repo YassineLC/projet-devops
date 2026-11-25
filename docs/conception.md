@@ -9,6 +9,8 @@ Bibliothèque en microservices, avec de vrais livres importés depuis Open Libra
 - **Build** : Gradle, Java 21, module `.proto` partagé (structure des dépôts charroux)
 - **Docker** : builds multi-stage, images non-root sur Docker Hub (`yassinelahmar/biblio-*`)
 - **Kubernetes** : Kustomize (base + overlay minikube), Deployments, Services, ConfigMaps, Secrets, StatefulSet Postgres, probes, limites
-- **Istio** : gateway, mTLS strict, AuthorizationPolicy (qui appelle qui)
-- **Sécurité** : RBAC, Trivy, kubescape, access token Docker Hub
+- **Istio** : gateway, mTLS strict, AuthorizationPolicy (qui appelle qui), Kiali, circuit breaker, injection de panne
+- **Sécurité** : RBAC, NetworkPolicies, Trivy, kubescape, access token Docker Hub
+- **CI/CD** : GitHub Actions (tests, build, scan Trivy, push Docker Hub) + ArgoCD (GitOps)
+- **Front** : catalogue paginé (20 livres), typo Geist + Inter
 - **Hors périmètre** : cloud, login, gestion des membres

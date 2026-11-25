@@ -3,7 +3,9 @@ package fr.biblio.catalogue.livre;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @Service
 public class LivreService {
@@ -15,11 +17,14 @@ public class LivreService {
     }
 
     @Transactional(readOnly = true)
-    public List<Livre> rechercher(String q) {
+    public PageLivres rechercher(String q, int page, int taille) {
+        Pageable pageable = PageRequest.of(page, taille, Sort.by("titre").and(Sort.by("id")));
         if (q == null || q.isBlank()) {
-            return repository.findAll();
+            return PageLivres.de(repository.findAll(pageable));
         }
-        return repository.findByTitreContainingIgnoreCaseOrAuteursContainingIgnoreCase(q, q);
+        String terme = q.trim();
+        return PageLivres.de(
+                repository.findByTitreContainingIgnoreCaseOrAuteursContainingIgnoreCase(terme, terme, pageable));
     }
 
     @Transactional(readOnly = true)

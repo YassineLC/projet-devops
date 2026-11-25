@@ -5,3 +5,12 @@ namespace: bibliotheque
 
 resources:
   - ../../base
+
+# Versions déployées (mises à jour par la pipeline CI, déployées par ArgoCD)
+images:
+  - name: yassinelahmar/biblio-catalogue
+    newTag: 1.1.0
+  - name: yassinelahmar/biblio-emprunts
+    newTag: 1.1.0
+  - name: yassinelahmar/biblio-front
+    newTag: 1.1.0

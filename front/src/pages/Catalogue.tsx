@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { toast } from 'sonner'
-import { api, dateFr, type Livre } from '@/api'
+import { api, dateFr, type Livre, type PageLivres } from '@/api'
+import { PaginationLivres } from '@/components/PaginationLivres'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -19,20 +20,27 @@ type Props = { nom: string; onNom: (nom: string) => void }
 
 export function Catalogue({ nom, onNom }: Props) {
   const [recherche, setRecherche] = useState('')
-  const [livres, setLivres] = useState<Livre[] | null>(null)
+  const [page, setPage] = useState(0)
+  const [resultat, setResultat] = useState<PageLivres | null>(null)
   const [erreur, setErreur] = useState<string | null>(null)
   const [choisi, setChoisi] = useState<Livre | null>(null)
   const [envoi, setEnvoi] = useState(false)
+  const livres = resultat?.contenu ?? null
 
-  const charger = (q: string) => {
+  const charger = (q: string, p: number) => {
     setErreur(null)
-    api.livres(q).then(setLivres).catch((e: Error) => setErreur(e.message))
+    api.livres(q, p).then(setResultat).catch((e: Error) => setErreur(e.message))
   }
 
   useEffect(() => {
-    const t = setTimeout(() => charger(recherche), 250)
+    const t = setTimeout(() => charger(recherche, page), 250)
     return () => clearTimeout(t)
-  }, [recherche])
+  }, [recherche, page])
+
+  const changerPage = (p: number) => {
+    setPage(p)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   const emprunter = async (e: FormEvent) => {
     e.preventDefault()
@@ -44,7 +52,7 @@ export function Catalogue({ nom, onNom }: Props) {
         description: `À rendre avant le ${dateFr(emprunt.dateRetourPrevue)}`,
       })
       setChoisi(null)
-      charger(recherche)
+      charger(recherche, page)
     } catch (err) {
       toast.error((err as Error).message)
     } finally {
@@ -61,7 +69,10 @@ export function Catalogue({ nom, onNom }: Props) {
           type="search"
           placeholder="Titre ou auteur…"
           value={recherche}
-          onChange={(e) => setRecherche(e.target.value)}
+          onChange={(e) => {
+            setRecherche(e.target.value)
+            setPage(0)
+          }}
           className="h-11 bg-card text-base"
         />
       </div>
@@ -120,6 +131,17 @@ export function Catalogue({ nom, onNom }: Props) {
             )
           })}
         </ul>
+      )}
+
+      {resultat && (
+        <>
+          <PaginationLivres page={resultat.page} totalPages={resultat.totalPages} onPage={changerPage} />
+          {resultat.totalElements > 0 && (
+            <p className="mt-4 text-center text-sm text-muted-foreground">
+              {resultat.totalElements} livre{resultat.totalElements > 1 ? 's' : ''}
+            </p>
+          )}
+        </>
       )}
 
       <Dialog open={choisi !== null} onOpenChange={(ouvert) => !ouvert && setChoisi(null)}>

@@ -9,6 +9,16 @@ export type Livre = {
   exemplairesDisponibles: number
 }
 
+export type PageLivres = {
+  contenu: Livre[]
+  page: number
+  taille: number
+  totalElements: number
+  totalPages: number
+}
+
+export const TAILLE_PAGE = 20
+
 export type Statut = 'EN_COURS' | 'EN_RETARD' | 'RENDU'
 
 export type Emprunt = {
@@ -35,7 +45,8 @@ async function appel<T>(url: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  livres: (q: string) => appel<Livre[]>(`/api/livres?q=${encodeURIComponent(q)}`),
+  livres: (q: string, page: number) =>
+    appel<PageLivres>(`/api/livres?q=${encodeURIComponent(q)}&page=${page}&taille=${TAILLE_PAGE}`),
   emprunter: (livreId: number, emprunteur: string) =>
     appel<Emprunt>('/api/emprunts', { method: 'POST', body: JSON.stringify({ livreId, emprunteur }) }),
   emprunts: (emprunteur: string) =>
