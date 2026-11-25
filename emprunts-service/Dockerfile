@@ -1,5 +1,6 @@
 # Build multi-stage (contexte = racine du dépôt, pour accéder à proto/)
-FROM eclipse-temurin:21-jdk AS build
+# buildx : le jar est indépendant de l'architecture, il est compilé une seule fois en natif
+FROM --platform=$BUILDPLATFORM eclipse-temurin:21-jdk AS build
 WORKDIR /build
 COPY proto/ proto/
 COPY emprunts-service/gradlew emprunts-service/settings.gradle emprunts-service/build.gradle emprunts-service/

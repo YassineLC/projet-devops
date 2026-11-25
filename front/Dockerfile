@@ -1,4 +1,5 @@
-FROM node:22-alpine AS build
+# buildx : le bundle JS est compilé une seule fois en natif, seule l'image nginx est multi-arch
+FROM --platform=$BUILDPLATFORM node:22-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci

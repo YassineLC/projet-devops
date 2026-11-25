@@ -1,0 +1,57 @@
+name: CI - manifests Kubernetes
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'k8s/**'
+      - 'argocd/**'
+      - '.github/workflows/ci-k8s.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'k8s/**'
+      - 'argocd/**'
+      - '.github/workflows/ci-k8s.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: k8s-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Kustomize + kubeconform
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Render the minikube overlay
+        run: kubectl kustomize k8s/overlays/minikube > rendu.yaml
+
+      - name: Validate schemas (CRDs Istio/SealedSecrets ignored)
+        run: |
+          curl -sSL https://github.com/yannh/kubeconform/releases/download/v0.8.0/kubeconform-linux-amd64.tar.gz | tar xz
+          ./kubeconform -strict -summary -ignore-missing-schemas rendu.yaml
+
+  security:
+    name: Kubescape (NSA)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Render the minikube overlay
+        run: kubectl kustomize k8s/overlays/minikube > rendu.yaml
+
+      - name: Scan with Kubescape (fails under 100 %)
+        run: |
+          curl -sSL -o kubescape https://github.com/kubescape/kubescape/releases/download/v4.0.21/kubescape_4.0.21_linux_amd64
+          chmod +x kubescape
+          ./kubescape scan framework nsa rendu.yaml --compliance-threshold 100 --format pretty-printer
