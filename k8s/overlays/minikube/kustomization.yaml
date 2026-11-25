@@ -6,8 +6,8 @@ resources:
 # Versions déployées (mises à jour par la pipeline CI, déployées par ArgoCD)
 images:
   - name: yassinelahmar/biblio-catalogue
-    newTag: sha-96cbb25
+    newTag: sha-d75a1c6
   - name: yassinelahmar/biblio-emprunts
-    newTag: sha-96cbb25
+    newTag: sha-d75a1c6
   - name: yassinelahmar/biblio-front
-    newTag: sha-96cbb25
+    newTag: sha-d75a1c6
