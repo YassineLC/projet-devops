@@ -1,16 +1,13 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-
 namespace: bibliotheque
-
 resources:
   - ../../base
-
 # Versions déployées (mises à jour par la pipeline CI, déployées par ArgoCD)
 images:
   - name: yassinelahmar/biblio-catalogue
-    newTag: 1.1.0
+    newTag: sha-96cbb25
   - name: yassinelahmar/biblio-emprunts
-    newTag: 1.1.1
+    newTag: sha-96cbb25
   - name: yassinelahmar/biblio-front
-    newTag: 1.1.0
+    newTag: sha-96cbb25
