@@ -10,4 +10,7 @@ public interface CatalogueClient {
     LivreInfo reserver(long livreId);
 
     LivreInfo liberer(long livreId);
+
+    /** Ouvre la connexion gRPC à l'avance (le premier appel d'un canal froid prend plusieurs secondes). */
+    void prechauffer();
 }

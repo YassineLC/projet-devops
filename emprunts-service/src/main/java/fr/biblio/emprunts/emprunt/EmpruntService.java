@@ -14,6 +14,8 @@ import java.util.List;
 @Service
 public class EmpruntService {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(EmpruntService.class);
+
     private final EmpruntRepository repository;
     private final CatalogueClient catalogue;
     private final int dureeJours;
@@ -57,6 +59,7 @@ public class EmpruntService {
         try {
             return appel.get();
         } catch (StatusRuntimeException e) {
+            log.warn("Appel gRPC catalogue en échec : {}", e.getStatus());
             throw switch (e.getStatus().getCode()) {
                 case NOT_FOUND -> new EmpruntException(HttpStatus.NOT_FOUND, "Livre introuvable");
                 case FAILED_PRECONDITION -> new EmpruntException(HttpStatus.CONFLICT, "Plus aucun exemplaire disponible");

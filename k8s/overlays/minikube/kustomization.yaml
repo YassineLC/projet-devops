@@ -11,6 +11,6 @@ images:
   - name: yassinelahmar/biblio-catalogue
     newTag: 1.1.0
   - name: yassinelahmar/biblio-emprunts
-    newTag: 1.1.0
+    newTag: 1.1.1
   - name: yassinelahmar/biblio-front
     newTag: 1.1.0
