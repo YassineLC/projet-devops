@@ -112,7 +112,9 @@ class CatalogueGrpcServiceTest {
 
         long succes = 0;
         for (Future<Boolean> f : pool.invokeAll(taches)) {
-            if (f.get()) succes++;
+            if (f.get()) {
+                succes++;
+            }
         }
         pool.shutdown();
 
