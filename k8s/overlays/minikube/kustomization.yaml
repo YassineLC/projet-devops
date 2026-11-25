@@ -10,4 +10,5 @@ images:
   - name: yassinelahmar/biblio-emprunts
     newTag: sha-5e34e9f
   - name: yassinelahmar/biblio-front
-    newTag: sha-5e34e9f
+    newTag: sha-c2f0615
+    digest: sha256:8beaf7e85d535b2a643e064c09326503cab8a0d639f292cc00148745f137429a
