@@ -9,10 +9,6 @@ on:
       - '.github/workflows/ci-emprunts.yml'
   pull_request:
     branches: [main]
-    paths:
-      - 'emprunts-service/**'
-      - 'proto/**'
-      - '.github/workflows/ci-emprunts.yml'
   workflow_dispatch:
 
 concurrency:
@@ -30,7 +26,7 @@ env:
 
 jobs:
   test:
-    name: Java tests
+    name: Emprunts tests
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -63,7 +59,7 @@ jobs:
           retention-days: 7
 
   quality:
-    name: Java quality
+    name: Emprunts quality
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -94,7 +90,7 @@ jobs:
           retention-days: 7
 
   docker:
-    name: Docker image (buildx multi-arch)
+    name: Emprunts Docker image
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     needs: [test, quality]
@@ -157,7 +153,7 @@ jobs:
           cache-to: type=gha,scope=emprunts,mode=max
 
   supply-chain:
-    name: Supply chain
+    name: Emprunts supply chain
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -263,7 +259,7 @@ jobs:
           category: trivy-emprunts
 
   gitops:
-    name: GitOps (ArgoCD)
+    name: Emprunts GitOps
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     needs: [docker, supply-chain]

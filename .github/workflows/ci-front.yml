@@ -8,9 +8,6 @@ on:
       - '.github/workflows/ci-front.yml'
   pull_request:
     branches: [main]
-    paths:
-      - 'front/**'
-      - '.github/workflows/ci-front.yml'
   workflow_dispatch:
 
 concurrency:
@@ -83,7 +80,7 @@ jobs:
       - name: Lint (oxlint)
         run: npm run lint
   docker:
-    name: Docker image (buildx multi-arch)
+    name: Front Docker image
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     needs: [test, quality]
@@ -146,7 +143,7 @@ jobs:
           cache-to: type=gha,scope=front,mode=max
 
   supply-chain:
-    name: Supply chain
+    name: Front supply chain
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -252,7 +249,7 @@ jobs:
           category: trivy-front
 
   gitops:
-    name: GitOps (ArgoCD)
+    name: Front GitOps
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     needs: [docker, supply-chain]
