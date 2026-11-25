@@ -254,10 +254,13 @@ jobs:
     timeout-minutes: 10
     needs: [docker, supply-chain]
     permissions:
-      contents: write
+      contents: read
     steps:
-      - name: Checkout code
+      # main est protégée : seule la deploy key GitOps peut y pousser directement
+      - name: Checkout code (deploy key GitOps)
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ssh-key: ${{ secrets.GITOPS_DEPLOY_KEY }}
 
       - name: Pin the signed digest in the minikube overlay
         env:
