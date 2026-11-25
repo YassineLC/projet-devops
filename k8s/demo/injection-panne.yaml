@@ -1,0 +1,23 @@
+# Démo (à appliquer à la main, hors ArgoCD) : le catalogue devient lent pour emprunts.
+#   kubectl apply -f k8s/demo/injection-panne.yaml
+#   -> un emprunt répond 503 "Catalogue indisponible" en ~3 s (deadline gRPC) au lieu de bloquer
+#   kubectl delete -f k8s/demo/injection-panne.yaml
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: catalogue-panne
+  namespace: bibliotheque
+spec:
+  hosts:
+    - catalogue-service
+  http:
+    - fault:
+        delay:
+          percentage:
+            value: 100
+          fixedDelay: 5s
+      route:
+        - destination:
+            host: catalogue-service
+            port:
+              number: 9090
