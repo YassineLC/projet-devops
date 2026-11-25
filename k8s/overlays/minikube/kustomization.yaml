@@ -12,5 +12,5 @@ images:
     newTag: sha-c2f0615
     digest: sha256:5c1222d80487a31a72e3aef2b93d0c03d8509dcdad0700e6974fcd324fe7cd63
   - name: yassinelahmar/biblio-front
-    newTag: sha-c2f0615
-    digest: sha256:8beaf7e85d535b2a643e064c09326503cab8a0d639f292cc00148745f137429a
+    newTag: sha-4fb8721
+    digest: sha256:ebf7109798286f73aef17f0c2e858f0a9f38a860c16b40668889f46b5000ea93
