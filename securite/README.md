@@ -7,8 +7,14 @@
 - **Pods** : non-root, système de fichiers en lecture seule, capabilities supprimées, seccomp `RuntimeDefault`, limites CPU/mémoire
 - **Images** : publiées avec un access token Docker Hub, scannées avec Trivy
 - **kubescape** (framework NSA) : 85 % → 100 %
+- **Sealed Secrets** : aucun mot de passe en clair dans Git, seul le contrôleur du cluster déchiffre `k8s/base/sealed-secrets.yaml`
+- **Gitleaks** : historique Git scanné en CI, exceptions justifiées dans `.gitleaks.toml`
 
 ```powershell
+# Régénérer un Secret scellé (le fichier clair ne doit jamais être commité)
+kubectl create secret generic catalogue-db -n bibliotheque --from-literal=... --dry-run=client -o yaml > clair.yaml
+kubeseal --format yaml -f clair.yaml   # coller le résultat dans k8s/base/sealed-secrets.yaml
+
 kubescape scan framework nsa <(kubectl kustomize k8s/overlays/minikube)
 docker run --rm -v //var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --severity HIGH,CRITICAL yassinelahmar/biblio-catalogue:<tag>
 kubectl auth can-i get secrets -n bibliotheque --as=system:serviceaccount:bibliotheque:dev-deployeur   # no

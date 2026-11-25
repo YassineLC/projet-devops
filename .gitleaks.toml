@@ -1,0 +1,10 @@
+# Règles Gitleaks par défaut + exceptions justifiées
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Exceptions documentées"
+# Valeurs chiffrées par kubeseal : inutilisables sans la clé privée du contrôleur du cluster
+paths = ['''k8s/base/sealed-secrets\.yaml''']
+# Ancien Secret de démo en clair : mots de passe révoqués (ALTER USER) lors du passage aux Sealed Secrets
+commits = ["897db3523febe63510dbfa88e7d802985f0c199d"]

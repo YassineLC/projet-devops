@@ -5,7 +5,7 @@ namespace: bibliotheque
 
 resources:
   - namespace.yaml
-  - postgres-secret.yaml
+  - sealed-secrets.yaml
   - postgres-init-configmap.yaml
   - postgres-statefulset.yaml
   - catalogue-deployment.yaml
