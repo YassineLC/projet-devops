@@ -1,0 +1,95 @@
+# mTLS obligatoire entre tous les pods du namespace
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+metadata:
+  name: default
+spec:
+  mtls:
+    mode: STRICT
+---
+# Refus par défaut : tout appel non autorisé explicitement est rejeté (403)
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: refus-par-defaut
+spec: {}
+---
+# catalogue : REST depuis la gateway, gRPC uniquement depuis emprunts
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: catalogue
+spec:
+  selector:
+    matchLabels:
+      app: catalogue
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals: ["cluster.local/ns/istio-system/sa/istio-ingressgateway-service-account"]
+      to:
+        - operation:
+            ports: ["8080"]
+            paths: ["/api/livres", "/api/livres/*"]
+    - from:
+        - source:
+            principals: ["cluster.local/ns/bibliotheque/sa/emprunts"]
+      to:
+        - operation:
+            ports: ["9090"]
+---
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: emprunts
+spec:
+  selector:
+    matchLabels:
+      app: emprunts
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals: ["cluster.local/ns/istio-system/sa/istio-ingressgateway-service-account"]
+      to:
+        - operation:
+            ports: ["8080"]
+            paths: ["/api/emprunts", "/api/emprunts/*"]
+---
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: front
+spec:
+  selector:
+    matchLabels:
+      app: front
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals: ["cluster.local/ns/istio-system/sa/istio-ingressgateway-service-account"]
+      to:
+        - operation:
+            ports: ["8080"]
+---
+# Postgres : seulement les deux services métier
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: postgres
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - "cluster.local/ns/bibliotheque/sa/catalogue"
+              - "cluster.local/ns/bibliotheque/sa/emprunts"
+      to:
+        - operation:
+            ports: ["5432"]

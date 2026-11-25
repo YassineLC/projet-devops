@@ -1,0 +1,144 @@
+# Isolation réseau (couche 3/4), en complément des AuthorizationPolicy Istio (couche 7)
+# 1. Tout est bloqué par défaut
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: refus-par-defaut
+spec:
+  podSelector: {}
+  policyTypes: ["Ingress", "Egress"]
+---
+# 2. Tous les pods : DNS, plan de contrôle Istio, métriques Prometheus
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: socle-mesh
+spec:
+  podSelector: {}
+  policyTypes: ["Ingress", "Egress"]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - { protocol: UDP, port: 53 }
+        - { protocol: TCP, port: 53 }
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: istio-system
+      ports:
+        - { protocol: TCP, port: 15012 }
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: istio-system
+      ports:
+        - { protocol: TCP, port: 15020 }
+        - { protocol: TCP, port: 15090 }
+---
+# 3. La gateway Istio peut joindre le front et les API REST
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: depuis-gateway
+spec:
+  podSelector:
+    matchExpressions:
+      - { key: app, operator: In, values: ["front", "catalogue", "emprunts"] }
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: istio-system
+          podSelector:
+            matchLabels:
+              istio: ingressgateway
+      ports:
+        - { protocol: TCP, port: 8080 }
+---
+# 4. emprunts -> catalogue (gRPC) et -> postgres
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: emprunts-sortie
+spec:
+  podSelector:
+    matchLabels:
+      app: emprunts
+  policyTypes: ["Egress"]
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: catalogue
+      ports:
+        - { protocol: TCP, port: 9090 }
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - { protocol: TCP, port: 5432 }
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: catalogue-entree-grpc
+spec:
+  podSelector:
+    matchLabels:
+      app: catalogue
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: emprunts
+      ports:
+        - { protocol: TCP, port: 9090 }
+---
+# 5. catalogue -> postgres et -> Open Library (HTTPS externe)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: catalogue-sortie
+spec:
+  podSelector:
+    matchLabels:
+      app: catalogue
+  policyTypes: ["Egress"]
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - { protocol: TCP, port: 5432 }
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except: ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+      ports:
+        - { protocol: TCP, port: 443 }
+---
+# 6. postgres n'accepte que les deux services métier
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: postgres-entree
+spec:
+  podSelector:
+    matchLabels:
+      app: postgres
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - podSelector:
+            matchExpressions:
+              - { key: app, operator: In, values: ["catalogue", "emprunts"] }
+      ports:
+        - { protocol: TCP, port: 5432 }

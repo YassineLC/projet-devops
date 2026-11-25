@@ -1,0 +1,66 @@
+# Rôle lecture seule : consulter l'état de l'appli, sans accès aux Secrets
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: lecteur
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/log", "services", "configmaps", "events"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "statefulsets", "replicasets"]
+    verbs: ["get", "list", "watch"]
+---
+# Rôle de déploiement : mettre à jour l'appli, toujours sans accès aux Secrets
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: deployeur
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/log", "services", "configmaps", "events"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["services", "configmaps"]
+    verbs: ["create", "update", "patch", "delete"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "statefulsets", "replicasets"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dev-lecteur
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dev-deployeur
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: dev-lecteur
+subjects:
+  - kind: ServiceAccount
+    name: dev-lecteur
+    namespace: bibliotheque
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: lecteur
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: dev-deployeur
+subjects:
+  - kind: ServiceAccount
+    name: dev-deployeur
+    namespace: bibliotheque
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: deployeur

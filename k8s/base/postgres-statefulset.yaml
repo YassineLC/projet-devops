@@ -66,8 +66,11 @@ spec:
               readOnly: true
             - name: run
               mountPath: /var/run/postgresql
+            - name: tmp
+              mountPath: /tmp
           securityContext:
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
             capabilities:
               drop: ["ALL"]
           readinessProbe:
@@ -93,6 +96,8 @@ spec:
             name: postgres-init
             defaultMode: 0555
         - name: run
+          emptyDir: {}
+        - name: tmp
           emptyDir: {}
   volumeClaimTemplates:
     - metadata:

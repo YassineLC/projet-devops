@@ -12,6 +12,9 @@ resources:
   - emprunts-deployment.yaml
   - front-deployment.yaml
   - istio-gateway.yaml
+  - istio-securite.yaml
+  - rbac.yaml
+  - network-policies.yaml
 
 labels:
   - pairs:
