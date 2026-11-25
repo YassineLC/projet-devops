@@ -9,6 +9,8 @@
 - **kubescape** (framework NSA) : 85 % → 100 %
 - **Sealed Secrets** : aucun mot de passe en clair dans Git, seul le contrôleur du cluster déchiffre `k8s/base/sealed-secrets.yaml`
 - **Gitleaks** : historique Git scanné en CI, exceptions justifiées dans `.gitleaks.toml`
+- **Branche `main` protégée** (ruleset) : PR obligatoire, 14 contrôles requis, ni force-push ni suppression ; seule exception, la deploy key GitOps (secret `GITOPS_DEPLOY_KEY`) qui pousse les digests déployés par ArgoCD
+- **Chaîne logicielle** : actions épinglées par SHA, images de base par digest (`python scripts/course.py supply-chain-policy`, aussi exécuté en CI)
 
 ```powershell
 # Régénérer un Secret scellé (le fichier clair ne doit jamais être commité)

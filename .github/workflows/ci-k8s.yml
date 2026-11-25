@@ -9,10 +9,6 @@ on:
       - '.github/workflows/ci-k8s.yml'
   pull_request:
     branches: [main]
-    paths:
-      - 'k8s/**'
-      - 'argocd/**'
-      - '.github/workflows/ci-k8s.yml'
   workflow_dispatch:
 
 concurrency:
@@ -24,7 +20,7 @@ permissions:
 
 jobs:
   validate:
-    name: Kustomize + kubeconform
+    name: Manifests validation
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -40,7 +36,7 @@ jobs:
           ./kubeconform -strict -summary -ignore-missing-schemas rendu.yaml
 
   security:
-    name: Kubescape (NSA)
+    name: Manifests security
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
