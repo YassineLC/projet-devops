@@ -9,6 +9,7 @@ minikube start -p biblio --cpus 4 --memory 8192
 istioctl install --set profile=default -y
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.32/samples/addons/prometheus.yaml
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.32/samples/addons/kiali.yaml
+kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.41.2/controller.yaml
 kubectl create namespace argocd
 kubectl apply -n argocd --server-side -f https://raw.githubusercontent.com/argoproj/argo-cd/v3.6.3/manifests/install.yaml
 kubectl apply -f argocd/application.yaml          # ArgoCD déploie k8s/overlays/minikube
@@ -28,6 +29,9 @@ kubectl -n istio-system port-forward svc/kiali 20001:20001              # http:/
 - **Kubernetes** : Kustomize (base + overlay), Deployments, Services, Secrets, ConfigMap, probes, limites, initContainer
 - **Istio** : Gateway + VirtualService, mTLS STRICT, AuthorizationPolicy, ServiceEntry, circuit breaker, injection de panne (`k8s/demo`)
 - **Observabilité** : Prometheus + Kiali
-- **Sécurité** : RBAC, NetworkPolicies, pods durcis, Trivy, kubescape NSA 100 % (détails : `securite/`)
-- **CI** : GitHub Actions (tests, build front, validation des manifests, images, scan Trivy, push Docker Hub)
-- **CD** : ArgoCD (GitOps), la CI met à jour le tag d'image dans `k8s/overlays/minikube`
+- **Sécurité** : RBAC, NetworkPolicies, pods durcis, Sealed Secrets, Trivy, kubescape NSA 100 % (détails : `securite/`)
+- **CI** (structure de `charroux/rental`) : un workflow par microservice (`ci-catalogue`, `ci-emprunts`, `ci-front`) déclenché par chemin, actions épinglées par SHA, tests + Checkstyle/lint avec rapports en artefacts
+- **Images** : buildx multi-arch (amd64 + arm64), publiées sur Docker Hub et GHCR
+- **Supply chain** : signature Cosign sans clé, SBOM SPDX, attestations de provenance et de SBOM, vérification en CI, scan Trivy du digest
+- **Dépôt** : Gitleaks, dependency review, Dependabot, manifests validés (kubeconform + kubescape)
+- **CD** : ArgoCD (GitOps), la CI épingle le digest signé dans `k8s/overlays/minikube`
