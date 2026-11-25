@@ -17,6 +17,16 @@ kubectl -n istio-system port-forward svc/istio-ingressgateway 8080:80   # http:/
 kubectl -n istio-system port-forward svc/kiali 20001:20001              # http://localhost:20001
 ```
 
+## Vérifier en local
+
+```powershell
+python scripts/course.py verify                # tests + Checkstyle/lint + politique de chaîne logicielle
+python scripts/course.py supply-chain-policy   # actions épinglées par SHA, images de base par digest
+docker buildx build --platform linux/amd64,linux/arm64 -f catalogue-service/Dockerfile .
+```
+
+`main` est protégée : toute modification passe par une pull request avec les contrôles verts.
+
 ## Implémenté
 
 - **catalogue-service** (Spring Boot 4, Java 21) : REST paginé + serveur gRPC, import Open Library, réservation atomique
