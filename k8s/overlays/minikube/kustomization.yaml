@@ -9,8 +9,8 @@ images:
     newTag: sha-6f96966
     digest: sha256:0a616c68d082a2d698573fdca49b0c0b39692a2ea10a8b9e33a49a0beb158b68
   - name: yassinelahmar/biblio-emprunts
-    newTag: sha-4fb8721
-    digest: sha256:ebd6010a4889b0b4dfe1c5b7fe2c4ac899634cf737a781434e54aebe8f6b2ea5
+    newTag: sha-6f96966
+    digest: sha256:f044a0bec688673d06a3480e22b0fc8de2755b83105ba9c282793ce903547fa1
   - name: yassinelahmar/biblio-front
     newTag: sha-b2e7a13
     digest: sha256:439044acebe04659b4be2834cf43af2da14fc5fafb3002c01b7bee7306c959d6
