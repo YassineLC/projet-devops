@@ -33,7 +33,6 @@ IMAGE_JDK = "eclipse-temurin:21-jdk"
 
 ACTION = re.compile(r"""^\s*-?\s*uses:\s*['"]?([^'"\s#]+)""", re.MULTILINE)
 SHA_COMPLET = re.compile(r"@[0-9a-f]{40}$")
-FROM = re.compile(r"^\s*FROM\s+(?:--\S+\s+)*(\S+)(?:\s+AS\s+(\S+))?", re.MULTILINE | re.IGNORECASE)
 DIGEST = re.compile(r"@sha256:[0-9a-f]{64}$")
 
 
@@ -49,11 +48,15 @@ def from_mutables(texte: str) -> list[str]:
     """Images de base sans digest SHA-256 (les références à une étape précédente sont acceptées)."""
     etapes: set[str] = set()
     fautes = []
-    for image, alias in FROM.findall(texte):
+    for ligne in texte.splitlines():
+        mots = [m for m in ligne.split() if not m.startswith("--")]
+        if len(mots) < 2 or mots[0].lower() != "from":
+            continue
+        image = mots[1]
         if image.lower() not in etapes and not DIGEST.search(image):
             fautes.append(image)
-        if alias:
-            etapes.add(alias.lower())
+        if len(mots) >= 4 and mots[2].lower() == "as":
+            etapes.add(mots[3].lower())
     return fautes
 
 
